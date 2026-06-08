@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Anime Hub - Watch Anime Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+        }
+
+        /* Fixed Background */
+        .bg-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            z-index: -2;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.95);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #ff3366;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff3366, #ff9933);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.8rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            background: rgba(255,51,102,0.2);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, rgba(255,51,102,0.2), rgba(0,0,0,0.9));
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .search-container {
+            max-width: 500px;
+            margin: -20px auto 1.5rem;
+            padding: 0 1rem;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border: 2px solid #ff3366;
+            border-radius: 50px;
+            background: rgba(0,0,0,0.9);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin: 1rem 0;
+            border-left: 4px solid #ff3366;
+            padding-left: 1rem;
+        }
+
+        .anime-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .anime-card {
+            background: rgba(30,30,40,0.95);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 1px solid #ff3366;
+        }
+
+        .anime-card:active {
+            transform: scale(0.97);
+        }
+
+        .anime-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(45deg, #ff3366, #ff9933);
+        }
+
+        .anime-info {
+            padding: 0.7rem;
+        }
+
+        .anime-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 0.2rem;
+        }
+
+        .anime-type {
+            font-size: 0.7rem;
+            color: #ff9933;
+        }
+
+        /* Video Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .video-header {
+            background: #111;
+            padding: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .video-title {
+            font-size: 0.85rem;
+            flex: 1;
+        }
+
+        .close-video {
+            background: #ff3366;
+            border: none;
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .video-container {
+            flex: 1;
+            background: #000;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        @media (min-width: 768px) {
+            .anime-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+            .anime-image {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-fixed"></div>
+
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">🎬 Anime Hub</div>
+            <ul class="nav-links">
+                <li><a onclick="loadAllAnime()">All</a></li>
+                <li><a onclick="loadPopular()">Popular</a></li>
+                <li><a onclick="loadNew()">New</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <h1>Welcome to Anime Hub</h1>
+        <p>Click any anime to watch | Free & Working Links</p>
+    </div>
+
+    <div class="search-container">
+        <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search anime...">
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">🔥 Trending Anime</h2>
+        <div class="anime-grid" id="animeGrid"></div>
+    </div>
+
+    <div class="video-modal" id="videoModal">
+        <div class="video-header">
+            <span class="video-title" id="videoTitle">Now Playing</span>
+            <button class="close-video" onclick="closeVideo()">Close</button>
+        </div>
+        <div class="video-container">
+            <iframe id="videoFrame" src="" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2024 Anime Hub | All videos from official sources</p>
+    </footer>
+
+    <script>
+        // REAL ANIME DATA WITH WORKING LINKS
+        const animeDatabase = [
+            {
+                id: 1,
+                title: "Naruto Shippuden",
+                image: "https://cdn.myanimelist.net/images/anime/1508/117679l.jpg",
+                type: "Action",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/2MIFqqRVT_g?autoplay=1&rel=0"
+            },
+            {
+                id: 2,
+                title: "One Piece",
+                image: "https://cdn.myanimelist.net/images/anime/1244/138851l.jpg",
+                type: "Action",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/0vLp3tPECm0?autoplay=1&rel=0"
+            },
+            {
+                id: 3,
+                title: "Demon Slayer",
+                image: "https://cdn.myanimelist.net/images/anime/1286/99889l.jpg",
+                type: "Action",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/VQGCKyvzIM4?autoplay=1&rel=0"
+            },
+            {
+                id: 4,
+                title: "Attack on Titan",
+                image: "https://cdn.myanimelist.net/images/anime/10/47347l.jpg",
+                type: "Action",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/MGRm4IzK1SQ?autoplay=1&rel=0"
+            },
+            {
+                id: 5,
+                title: "Jujutsu Kaisen",
+                image: "https://cdn.myanimelist.net/images/anime/1171/109222l.jpg",
+                type: "Action",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/ynrK1kf7jqU?autoplay=1&rel=0"
+            },
+            {
+                id: 6,
+                title: "My Hero Academia",
+                image: "https://cdn.myanimelist.net/images/anime/10/78745l.jpg",
+                type: "Action",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/HKhXEjMhC9Y?autoplay=1&rel=0"
+            },
+            {
+                id: 7,
+                title: "Death Note",
+                image: "https://cdn.myanimelist.net/images/anime/9/9453l.jpg",
+                type: "Thriller",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/NlJZ-YgAt-c?autoplay=1&rel=0"
+            },
+            {
+                id: 8,
+                title: "Tokyo Revengers",
+                image: "https://cdn.myanimelist.net/images/anime/1398/133870l.jpg",
+                type: "Action",
+                category: "new",
+                videoUrl: "https://www.youtube.com/embed/6BzY0hEyYFk?autoplay=1&rel=0"
+            },
+            {
+                id: 9,
+                title: "Chainsaw Man",
+                image: "https://cdn.myanimelist.net/images/anime/1806/126216l.jpg",
+                type: "Action",
+                category: "new",
+                videoUrl: "https://www.youtube.com/embed/jK2kI9I3X8k?autoplay=1&rel=0"
+            },
+            {
+                id: 10,
+                title: "Dragon Ball Super",
+                image: "https://cdn.myanimelist.net/images/anime/1607/117271l.jpg",
+                type: "Action",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/LWYZd2IxcGg?autoplay=1&rel=0"
+            },
+            {
+                id: 11,
+                title: "Spy x Family",
+                image: "https://cdn.myanimelist.net/images/anime/1161/121462l.jpg",
+                type: "Comedy",
+                category: "new",
+                videoUrl: "https://www.youtube.com/embed/Sn9XyW3x5qM?autoplay=1&rel=0"
+            },
+            {
+                id: 12,
+                title: "Vinland Saga",
+                image: "https://cdn.myanimelist.net/images/anime/1500/103005l.jpg",
+                type: "Action",
+                category: "new",
+                videoUrl: "https://www.youtube.com/embed/f8nk_NX5NLI?autoplay=1&rel=0"
+            },
+            {
+                id: 13,
+                title: "Black Clover",
+                image: "https://cdn.myanimelist.net/images/anime/2/88336l.jpg",
+                type: "Action",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/9sVY8J6-5pM?autoplay=1&rel=0"
+            },
+            {
+                id: 14,
+                title: "Hunter x Hunter",
+                image: "https://cdn.myanimelist.net/images/anime/11/33657l.jpg",
+                type: "Action",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/d6kXJ5x0N-E?autoplay=1&rel=0"
+            },
+            {
+                id: 15,
+                title: "One Punch Man",
+                image: "https://cdn.myanimelist.net/images/anime/12/76049l.jpg",
+                type: "Action",
+                category: "popular",
+                videoUrl: "https://www.youtube.com/embed/atxYe-nOa9w?autoplay=1&rel=0"
+            }
+        ];
+
+        let currentAnimeList = [...animeDatabase];
+
+        function displayAnime(animeArray) {
+            const grid = document.getElementById('animeGrid');
+            if (!grid) return;
+            
+            if (animeArray.length === 0) {
+                grid.innerHTML = '<div style="text-align:center;padding:2rem;">❌ No anime found. Try "Naruto" or "One Piece"</div>';
+                return;
+            }
+            
+            grid.innerHTML = '';
+            
+            animeArray.forEach(anime => {
+                const card = document.createElement('div');
+                card.className = 'anime-card';
+                card.onclick = () => playVideo(anime.videoUrl, anime.title);
+                
+                card.innerHTML = `
+                    <img class="anime-image" src="${anime.image}" alt="${anime.title}" onerror="this.style.background='linear-gradient(45deg, #ff3366, #ff9933)'; this.onerror=null;">
+                    <div class="anime-info">
+                        <div class="anime-title">${anime.title}</div>
+                        <div class="anime-type">🎬 ${anime.type}</div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function playVideo(url, title) {
+            const modal = document.getElementById('videoModal');
+            const frame = document.getElementById('videoFrame');
+            const titleSpan = document.getElementById('videoTitle');
+            
+            if (modal && frame) {
+                frame.src = url;
+                titleSpan.innerText = title;
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeVideo() {
+            const modal = document.getElementById('videoModal');
+            const frame = document.getElementById('videoFrame');
+            if (modal && frame) {
+                frame.src = '';
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        function searchAnime() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = animeDatabase.filter(anime => 
+                anime.title.toLowerCase().includes(searchTerm)
+            );
+            displayAnime(filtered);
+            currentAnimeList = filtered;
+        }
+
+        function loadAllAnime() {
+            displayAnime(animeDatabase);
+            currentAnimeList = animeDatabase;
+            document.getElementById('searchInput').value = '';
+        }
+
+        function loadPopular() {
+            const filtered = animeDatabase.filter(anime => anime.category === 'popular');
+            displayAnime(filtered);
+            currentAnimeList = filtered;
+            document.getElementById('searchInput').value = '';
+        }
+
+        function loadNew() {
+            const filtered = animeDatabase.filter(anime => anime.category === 'new');
+            displayAnime(filtered);
+            currentAnimeList = filtered;
+            document.getElementById('searchInput').value = '';
+        }
+
+        // Event Listeners
+        document.getElementById('searchInput').addEventListener('input', searchAnime);
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeVideo();
+        });
+
+        // Load anime on page load
+        displayAnime(animeDatabase);
+        
+        console.log('Anime Hub Ready! Total anime: ' + animeDatabase.length);
+    </script>
+</body>
+</html>
